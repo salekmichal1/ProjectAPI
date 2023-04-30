@@ -1,21 +1,66 @@
 using ProjectAPI.Data;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Builder;
 using ProjectAPI.Model;
-using ProjectAPI.Model.DTO;
 using ProjectAPI;
-using AutoMapper;
 using FluentValidation;
 using System.Net;
 using Microsoft.EntityFrameworkCore;
 using static Azure.Core.HttpHeader;
+using ProjectAPI.Repozytorium;
+using ProjectAPI.Endpoints;
+using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddDefaultTokenProviders()
+    .AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.AddSwaggerGen(option => {
+    option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description =
+             "Wpisz 'Bearer' [space] a natêpnie token uwierzytleniania\r\n\r\n" +
+             "\"Bearer 123456\"",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+    option.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            },
+                            Scheme = "oauth2",
+                            Name = "Bearer",
+                            In = ParameterLocation.Header,
+
+                        },
+                        new List<string>()
+                    }
+                });
+
+
+});
+
+
+builder.Services.AddScoped<IProduktRepo, ProduktRepo>();
+builder.Services.AddScoped<IAutoryzacjaRepo, AutoryzacjaRepo>();
+
 
 builder.Services.AddDbContext<ApplicationDbContext>(option =>
     option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -24,8 +69,53 @@ builder.Services.AddAutoMapper(typeof(Mapowanie));
 
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
+//builder.Services.AddAuthentication(x =>
+//{
+//    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+//    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+//}).AddJwtBearer(x =>
+//{
+//    x.RequireHttpsMetadata = false;
+//    x.SaveToken = true;
+//    x.TokenValidationParameters = new TokenValidationParameters
+//    {
+//        ValidateIssuerSigningKey = true,
+//        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(
+//            builder.Configuration.GetValue<string>("ApiSettings:Secret"))),
+//        ValidateIssuer = false,
+//        ValidateAudience = false
+
+//    };
+//});
+
+builder.Services.AddAuthentication(x =>
+{
+    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(x =>
+{
+    x.RequireHttpsMetadata = false;
+    x.SaveToken = true;
+    x.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(
+            builder.Configuration.GetValue<string>("ApiSettings:Secret"))),
+        ValidateIssuer = false,
+        ValidateAudience = false
+    };
+});
+
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Admin", policy => policy.RequireRole("admin"));
+});
 
 var app = builder.Build();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -34,126 +124,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-///<summary>
-/// 
-/// </summary>
-app.MapGet("/api/product", async (ApplicationDbContext _dbContext, ILogger<Program> _logger) => {
+app.ConfigureAuthEndpoints();
 
-    APIStatus odpowiedz = new();
-
-    _logger.Log(LogLevel.Information, "Getting all Products");
-
-    odpowiedz.Rezulstat = _dbContext.Produkts;
-    odpowiedz.Akceptacja = true;
-    odpowiedz.KodStanu = HttpStatusCode.OK;
-    
-    return Results.Ok(odpowiedz);
-
-}).WithName("GetAllProducts").Produces<APIStatus>(200);
-
-////////////////////////////////////////////////////
-
-app.MapGet("/api/product/{id:int}", async (ApplicationDbContext _dbContext, ILogger < Program> _logger, int id) => {
-
-    APIStatus odpowiedz = new();
-
-    odpowiedz.Rezulstat = await _dbContext.Produkts.FirstOrDefaultAsync(u => u.Id == id);
-    odpowiedz.Akceptacja = true;
-    odpowiedz.KodStanu = HttpStatusCode.OK;
-
-}).WithName("GetProductById").Produces<APIStatus>(200);
-
-//////////////////////////////////////////////////////////
-
-app.MapPost("/api/product", async (ApplicationDbContext _dbContext, IMapper _mapper,
-    IValidator <StworzProduktDTO> _validation, [FromBody] StworzProduktDTO stworzProduktDTO) => {
-
-        APIStatus odpowiedz = new() { Akceptacja = false, KodStanu = HttpStatusCode.BadRequest };
-
-
-        var validationResult = await _validation.ValidateAsync(stworzProduktDTO);
-
-    if (!validationResult.IsValid)
-    {
-        odpowiedz.Bledy.Add(validationResult.Errors.FirstOrDefault().ToString());
-        return Results.BadRequest(odpowiedz);
-    }
-
-    if(_dbContext.Produkts.FirstOrDefault(u => u.Nazwa.ToLower() == stworzProduktDTO.Nazwa.ToLower()) != null)
-    {
-        odpowiedz.Bledy.Add("Produkt juz istnieje");
-        return Results.BadRequest(odpowiedz);
-    }
-
-    Produkt produkt = _mapper.Map<Produkt>(stworzProduktDTO);
-
-        _dbContext.Produkts.Add(produkt);
-        await _dbContext.SaveChangesAsync();
-        ProduktDTO produktDTO = _mapper.Map<ProduktDTO>(produkt);
-
-
-        odpowiedz.Rezulstat = produktDTO;
-        odpowiedz.Akceptacja = true;
-        odpowiedz.KodStanu = HttpStatusCode.Created;
-        return Results.Ok(odpowiedz);
-
-    }).WithName("CreateProduct").Accepts<StworzProduktDTO>("application/json").Produces<ProduktDTO>(201).Produces(400);
-
-//////////////////////////
-
-app.MapPut("/api/product", async (ApplicationDbContext _dbContext, IMapper _mapper,
-    IValidator<AktualizujProduktDTO> _validation, [FromBody] AktualizujProduktDTO aktualizujProduktDTO) =>
-{
-
-    APIStatus odpowiedz = new() { Akceptacja = false, KodStanu = HttpStatusCode.BadRequest };
-
-    var validationResult = await _validation.ValidateAsync(aktualizujProduktDTO);
-    if (!validationResult.IsValid)
-    {
-        odpowiedz.Bledy.Add(validationResult.Errors.FirstOrDefault().ToString());
-        return Results.BadRequest(odpowiedz);
-    }
-
-    Produkt produktPrzedAktualizacja = await _dbContext.Produkts.FirstOrDefaultAsync(u => u.Id == aktualizujProduktDTO.Id);
-    produktPrzedAktualizacja.Dostepny = aktualizujProduktDTO.Dostepny;
-    produktPrzedAktualizacja.Nazwa = aktualizujProduktDTO.Nazwa;
-    produktPrzedAktualizacja.Cena = aktualizujProduktDTO.Cena;
-    produktPrzedAktualizacja.Ilosc = aktualizujProduktDTO.Ilosc;
-    produktPrzedAktualizacja.Zaktualizowany = DateTime.Now;
-
-    await _dbContext.SaveChangesAsync();
-
-    odpowiedz.Rezulstat = _mapper.Map<ProduktDTO>(produktPrzedAktualizacja); ;
-    odpowiedz.Akceptacja = true;
-    odpowiedz.KodStanu = HttpStatusCode.OK;
-
-    return Results.Ok(odpowiedz);
-}).WithName("UpdateProduct")
-    .Accepts<AktualizujProduktDTO>("application/json").Produces<APIStatus>(200).Produces(400);
-
-///////////////////////////////////////
-
-app.MapDelete("/api/product/{id:int}", async (ApplicationDbContext _dbContext, int id) => {
-
-    APIStatus odpowiedz = new() { Akceptacja = false, KodStanu = HttpStatusCode.BadRequest };
-
-
-    Produkt produktSD = await _dbContext.Produkts.FirstOrDefaultAsync(u => u.Id == id);
-    if (produktSD != null)
-    {
-        _dbContext.Produkts.Remove(produktSD);
-        await _dbContext.SaveChangesAsync();
-        odpowiedz.Akceptacja = true;
-        odpowiedz.KodStanu = HttpStatusCode.NoContent;
-        return Results.Ok(odpowiedz);
-    }
-    else
-    {
-        odpowiedz.Bledy.Add("Invalid Id");
-        return Results.BadRequest(odpowiedz);
-    }
-});
+app.KonfiguracjaKoncowekProduktu();
 
 app.UseHttpsRedirection();
+
 
 app.Run();
