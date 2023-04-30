@@ -7,7 +7,8 @@ using ProjectAPI;
 using AutoMapper;
 using FluentValidation;
 using System.Net;
-
+using Microsoft.EntityFrameworkCore;
+using static Azure.Core.HttpHeader;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddDbContext<ApplicationDbContext>(option =>
+    option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddAutoMapper(typeof(Mapowanie));
 
@@ -33,12 +37,13 @@ if (app.Environment.IsDevelopment())
 ///<summary>
 /// 
 /// </summary>
-app.MapGet("/api/product", (ILogger<Program> _logger) => {
+app.MapGet("/api/product", async (ApplicationDbContext _dbContext, ILogger<Program> _logger) => {
+
     APIStatus odpowiedz = new();
 
     _logger.Log(LogLevel.Information, "Getting all Products");
 
-    odpowiedz.Rezulstat = ProduktySD.produktyLista;
+    odpowiedz.Rezulstat = _dbContext.Produkts;
     odpowiedz.Akceptacja = true;
     odpowiedz.KodStanu = HttpStatusCode.OK;
     
@@ -48,11 +53,11 @@ app.MapGet("/api/product", (ILogger<Program> _logger) => {
 
 ////////////////////////////////////////////////////
 
-app.MapGet("/api/product/{id:int}", (ILogger<Program> _logger, int id) => {
+app.MapGet("/api/product/{id:int}", async (ApplicationDbContext _dbContext, ILogger < Program> _logger, int id) => {
 
     APIStatus odpowiedz = new();
 
-    odpowiedz.Rezulstat = ProduktySD.produktyLista.FirstOrDefault(u => u.Id == id);
+    odpowiedz.Rezulstat = await _dbContext.Produkts.FirstOrDefaultAsync(u => u.Id == id);
     odpowiedz.Akceptacja = true;
     odpowiedz.KodStanu = HttpStatusCode.OK;
 
@@ -60,7 +65,7 @@ app.MapGet("/api/product/{id:int}", (ILogger<Program> _logger, int id) => {
 
 //////////////////////////////////////////////////////////
 
-app.MapPost("/api/product", async (IMapper _mapper,
+app.MapPost("/api/product", async (ApplicationDbContext _dbContext, IMapper _mapper,
     IValidator <StworzProduktDTO> _validation, [FromBody] StworzProduktDTO stworzProduktDTO) => {
 
         APIStatus odpowiedz = new() { Akceptacja = false, KodStanu = HttpStatusCode.BadRequest };
@@ -74,7 +79,7 @@ app.MapPost("/api/product", async (IMapper _mapper,
         return Results.BadRequest(odpowiedz);
     }
 
-    if (ProduktySD.produktyLista.FirstOrDefault(u => u.Nazwa.ToLower() == stworzProduktDTO.Nazwa.ToLower()) != null)
+    if(_dbContext.Produkts.FirstOrDefault(u => u.Nazwa.ToLower() == stworzProduktDTO.Nazwa.ToLower()) != null)
     {
         odpowiedz.Bledy.Add("Produkt juz istnieje");
         return Results.BadRequest(odpowiedz);
@@ -82,12 +87,10 @@ app.MapPost("/api/product", async (IMapper _mapper,
 
     Produkt produkt = _mapper.Map<Produkt>(stworzProduktDTO);
 
+        _dbContext.Produkts.Add(produkt);
+        await _dbContext.SaveChangesAsync();
+        ProduktDTO produktDTO = _mapper.Map<ProduktDTO>(produkt);
 
-    produkt.Id = ProduktySD.produktyLista.OrderByDescending(u => u.Id).FirstOrDefault().Id + 1;
-
-        ProduktySD.produktyLista.Add(produkt);
-
-    ProduktDTO produktDTO = _mapper.Map<ProduktDTO>(produkt);
 
         odpowiedz.Rezulstat = produktDTO;
         odpowiedz.Akceptacja = true;
@@ -98,7 +101,7 @@ app.MapPost("/api/product", async (IMapper _mapper,
 
 //////////////////////////
 
-app.MapPut("/api/product", async (IMapper _mapper,
+app.MapPut("/api/product", async (ApplicationDbContext _dbContext, IMapper _mapper,
     IValidator<AktualizujProduktDTO> _validation, [FromBody] AktualizujProduktDTO aktualizujProduktDTO) =>
 {
 
@@ -111,12 +114,14 @@ app.MapPut("/api/product", async (IMapper _mapper,
         return Results.BadRequest(odpowiedz);
     }
 
-    Produkt produktPrzedAktualizacja = ProduktySD.produktyLista.FirstOrDefault(u => u.Id == aktualizujProduktDTO.Id);
+    Produkt produktPrzedAktualizacja = await _dbContext.Produkts.FirstOrDefaultAsync(u => u.Id == aktualizujProduktDTO.Id);
     produktPrzedAktualizacja.Dostepny = aktualizujProduktDTO.Dostepny;
     produktPrzedAktualizacja.Nazwa = aktualizujProduktDTO.Nazwa;
     produktPrzedAktualizacja.Cena = aktualizujProduktDTO.Cena;
     produktPrzedAktualizacja.Ilosc = aktualizujProduktDTO.Ilosc;
     produktPrzedAktualizacja.Zaktualizowany = DateTime.Now;
+
+    await _dbContext.SaveChangesAsync();
 
     odpowiedz.Rezulstat = _mapper.Map<ProduktDTO>(produktPrzedAktualizacja); ;
     odpowiedz.Akceptacja = true;
@@ -126,8 +131,27 @@ app.MapPut("/api/product", async (IMapper _mapper,
 }).WithName("UpdateProduct")
     .Accepts<AktualizujProduktDTO>("application/json").Produces<APIStatus>(200).Produces(400);
 
-app.MapDelete("/api/product/{id:int}", (int id) => {
+///////////////////////////////////////
 
+app.MapDelete("/api/product/{id:int}", async (ApplicationDbContext _dbContext, int id) => {
+
+    APIStatus odpowiedz = new() { Akceptacja = false, KodStanu = HttpStatusCode.BadRequest };
+
+
+    Produkt produktSD = await _dbContext.Produkts.FirstOrDefaultAsync(u => u.Id == id);
+    if (produktSD != null)
+    {
+        _dbContext.Produkts.Remove(produktSD);
+        await _dbContext.SaveChangesAsync();
+        odpowiedz.Akceptacja = true;
+        odpowiedz.KodStanu = HttpStatusCode.NoContent;
+        return Results.Ok(odpowiedz);
+    }
+    else
+    {
+        odpowiedz.Bledy.Add("Invalid Id");
+        return Results.BadRequest(odpowiedz);
+    }
 });
 
 app.UseHttpsRedirection();
