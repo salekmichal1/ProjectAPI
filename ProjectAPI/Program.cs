@@ -28,7 +28,7 @@ builder.Services.AddSwaggerGen(option => {
     option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description =
-             "Wpisz 'Bearer' [space] a natêpnie token uwierzytleniania\r\n\r\n" +
+             "Wpisz 'Bearer' [spacja] a natêpnie token uwierzytleniania\r\n\r\n" +
              "\"Bearer 123456\"",
         Name = "Authorization",
         In = ParameterLocation.Header,
@@ -68,25 +68,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(option =>
 builder.Services.AddAutoMapper(typeof(Mapowanie));
 
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
-
-//builder.Services.AddAuthentication(x =>
-//{
-//    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-//    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-//}).AddJwtBearer(x =>
-//{
-//    x.RequireHttpsMetadata = false;
-//    x.SaveToken = true;
-//    x.TokenValidationParameters = new TokenValidationParameters
-//    {
-//        ValidateIssuerSigningKey = true,
-//        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(
-//            builder.Configuration.GetValue<string>("ApiSettings:Secret"))),
-//        ValidateIssuer = false,
-//        ValidateAudience = false
-
-//    };
-//});
 
 builder.Services.AddAuthentication(x =>
 {

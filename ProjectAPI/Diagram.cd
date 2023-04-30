@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="ProjectAPI.Repozytorium.AutoryzacjaRepo" BaseTypeListCollapsed="true">
+    <Position X="1.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABhAAAAAAAAAAAAAABAAAgAAABAAAAAIEQAAAAAAA=</HashCode>
+      <FileName>Repozytorium\AutoryzacjaRepo.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="ProjectAPI.Repozytorium.ProduktRepo" BaseTypeListCollapsed="true">
+    <Position X="7.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEBAAAAAAAAAAAAAAgAAAAAAIAAAAgAAAAAIIAAAAA=</HashCode>
+      <FileName>Repozytorium\ProduktRepo.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Interface Name="ProjectAPI.Repozytorium.IAutoryzacjaRepo">
+    <Position X="3.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAAAAAAAAAAAAAAAAAAABAAAAAAAQAAAAAAA=</HashCode>
+      <FileName>Repozytorium\IAutoryzacjaRepo.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ProjectAPI.Repozytorium.IProduktRepo">
+    <Position X="9" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAAAAAAAAAAgAAAAAAIAAAAgAAAAAIIAAAAA=</HashCode>
+      <FileName>Repozytorium\IProduktRepo.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Sagoe UI" Size="9" />
+</ClassDiagram>

@@ -12,6 +12,7 @@ namespace ProjectAPI
             CreateMap<Produkt, StworzProduktDTO>().ReverseMap();
             CreateMap<Produkt, AktualizujProduktDTO>().ReverseMap();
             CreateMap<Produkt, ProduktDTO>().ReverseMap();
+            CreateMap<Urzytkownik, UrzytkownikDTO>().ReverseMap();
             CreateMap<ApplicationUser, UrzytkownikDTO>().ReverseMap();
         }
     }

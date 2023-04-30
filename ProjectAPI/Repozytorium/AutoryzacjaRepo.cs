@@ -50,7 +50,7 @@ namespace ProjectAPI.Repozytorium
                 return null;
             }
 
-            var roles = await _userManager.GetRolesAsync(urzytkownik);
+            var role = await _userManager.GetRolesAsync(urzytkownik);
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(secretKey);
@@ -59,7 +59,7 @@ namespace ProjectAPI.Repozytorium
                 Subject = new ClaimsIdentity(new Claim[]
                 {
                     new Claim(ClaimTypes.Name, urzytkownik.Name),
-                    new Claim(ClaimTypes.Role, roles.FirstOrDefault()),
+                    new Claim(ClaimTypes.Role, role.FirstOrDefault()),
                 }),
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -95,7 +95,7 @@ namespace ProjectAPI.Repozytorium
                         await _roleManager.CreateAsync(new IdentityRole("admin"));
                         await _roleManager.CreateAsync(new IdentityRole("customer"));
                     }
-                    await _userManager.AddToRoleAsync(urzytkownikObj, "customer");
+                    await _userManager.AddToRoleAsync(urzytkownikObj, "admin");
 
                     var urzytkownik = _dbContext.ApplicationUsers.FirstOrDefault(u => u.UserName == prosbaDTO.NazwaUrzytkownika);
                     return _mapper.Map<UrzytkownikDTO>(urzytkownik);
