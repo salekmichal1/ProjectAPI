@@ -100,21 +100,21 @@ namespace ProjectAPI.Repozytorium
         /// <summary>
         /// Rejestracja użytkownika
         /// </summary>
-        /// <param name="prosbaDTO"></param>
+        /// <param name="prosbaRejestracjiDTO"></param>
         /// <returns></returns>
-        public async Task<UrzytkownikDTO> Register(ProsbaRejestracjiDTO prosbaDTO)
+        public async Task<UrzytkownikDTO> Register(ProsbaRejestracjiDTO prosbaRejestracjiDTO)
         {
             ApplicationUser urzytkownikObj = new()
             {
-                UserName = prosbaDTO.NazwaUrzytkownika,
-                Name = prosbaDTO.Nazwa,
-                NormalizedEmail = prosbaDTO.NazwaUrzytkownika.ToUpper(),
-                Email = prosbaDTO.NazwaUrzytkownika
+                UserName = prosbaRejestracjiDTO.NazwaUrzytkownika,
+                Name = prosbaRejestracjiDTO.Nazwa,
+                NormalizedEmail = prosbaRejestracjiDTO.NazwaUrzytkownika.ToUpper(),
+                Email = prosbaRejestracjiDTO.NazwaUrzytkownika
             };
 
             try
             {
-                var rezultat = await _userManager.CreateAsync(urzytkownikObj, prosbaDTO.Haslo);
+                var rezultat = await _userManager.CreateAsync(urzytkownikObj, prosbaRejestracjiDTO.Haslo);
                 if (rezultat.Succeeded)
                 {
                     if (!_roleManager.RoleExistsAsync("admin").GetAwaiter().GetResult())
@@ -124,7 +124,7 @@ namespace ProjectAPI.Repozytorium
                     }
                     await _userManager.AddToRoleAsync(urzytkownikObj, "admin");
 
-                    var urzytkownik = _dbContext.ApplicationUsers.FirstOrDefault(u => u.UserName == prosbaDTO.NazwaUrzytkownika);
+                    var urzytkownik = _dbContext.ApplicationUsers.FirstOrDefault(u => u.UserName == prosbaRejestracjiDTO.NazwaUrzytkownika);
                     return _mapper.Map<UrzytkownikDTO>(urzytkownik);
                 }
             }
