@@ -15,6 +15,10 @@ namespace ProjectAPI.Data
         public DbSet<Produkt> Produkts { get; set; }
         public DbSet<Urzytkownik> Urzytkownicy { get; set; } 
 
+        /// <summary>
+        /// Dodawania użytkowników przy tworzeni bazy
+        /// </summary>
+        /// <param name="modelBuilder"></param>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

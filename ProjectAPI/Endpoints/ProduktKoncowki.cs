@@ -10,6 +10,9 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace ProjectAPI.Endpoints
 {
+    /// <summary>
+    /// Klasa edpointów obsługujących działania na produktach
+    /// </summary>
     public static class ProduktKoncowki
     {
         public static void KonfiguracjaKoncowekProduktu(this WebApplication app)

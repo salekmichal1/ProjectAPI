@@ -5,6 +5,9 @@ using AutoMapper;
 
 namespace ProjectAPI
 {
+    /// <summary>
+    /// Klasa impelmentujaca kopiwoeanie danych z klas tabel 
+    /// </summary>
     public class Mapowanie : Profile
     {
         public Mapowanie()

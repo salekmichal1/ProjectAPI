@@ -11,6 +11,9 @@ using System.Text;
 
 namespace ProjectAPI.Repozytorium
 {
+    /// <summary>
+    /// Kalas imepletmecujaća interjest trzymający metody dla Autoryzacji użytkowników
+    /// </summary>
     public class AutoryzacjaRepo : IAutoryzacjaRepo
     {
         private readonly ApplicationDbContext _dbContext;
@@ -20,6 +23,14 @@ namespace ProjectAPI.Repozytorium
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
 
+        /// <summary>
+        /// Konstrutkor klasy 
+        /// </summary>
+        /// <param name="dbContext"></param>
+        /// <param name="mapper"></param>
+        /// <param name="configuration"></param>
+        /// <param name="userManager"></param>
+        /// <param name="roleManager"></param>
         public AutoryzacjaRepo(ApplicationDbContext dbContext, IMapper mapper, IConfiguration configuration, UserManager<ApplicationUser> userManager,  RoleManager<IdentityRole> roleManager)
         {
             _dbContext = dbContext;
@@ -30,6 +41,11 @@ namespace ProjectAPI.Repozytorium
             _roleManager = roleManager;
         }
 
+        /// <summary>
+        /// Sprawdzanie czy użytkownik już istnieje
+        /// </summary>
+        /// <param name="nazwaurzytkownika"></param>
+        /// <returns></returns>
         public bool IsUniqueUser(string nazwaurzytkownika)
         {
             var urzytkownik = _dbContext.ApplicationUsers.FirstOrDefault(x => x.UserName == nazwaurzytkownika);
@@ -40,6 +56,11 @@ namespace ProjectAPI.Repozytorium
             return false;
         }
 
+        /// <summary>
+        /// Logowanie użytkownika
+        /// </summary>
+        /// <param name="prosbaLogowaniaDTO"></param>
+        /// <returns></returns>
         public async Task<OdpowiedzLogowaniaDTO> Login(ProsbaLogowaniaDTO prosbaLogowaniaDTO)
         {
             var urzytkownik = _dbContext.ApplicationUsers.SingleOrDefault(x => x.UserName == prosbaLogowaniaDTO.NazwaUrzytkownika);
@@ -75,6 +96,12 @@ namespace ProjectAPI.Repozytorium
             return odpowiedzLogowaniaDTO;
         }
 
+
+        /// <summary>
+        /// Rejestracja użytkownika
+        /// </summary>
+        /// <param name="prosbaDTO"></param>
+        /// <returns></returns>
         public async Task<UrzytkownikDTO> Register(ProsbaRejestracjiDTO prosbaDTO)
         {
             ApplicationUser urzytkownikObj = new()

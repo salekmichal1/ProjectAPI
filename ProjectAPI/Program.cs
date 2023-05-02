@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -24,6 +25,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddDefaultTokenProviders()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
+// Kofiguracja swaggera pod weryfikacje u¿ytkownika
 builder.Services.AddSwaggerGen(option => {
     option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -57,11 +59,11 @@ builder.Services.AddSwaggerGen(option => {
 
 });
 
-
+// Wstrzykiwanie Repozytorium
 builder.Services.AddScoped<IProduktRepo, ProduktRepo>();
 builder.Services.AddScoped<IAutoryzacjaRepo, AutoryzacjaRepo>();
 
-
+// £¹czenie z baz¹ danych
 builder.Services.AddDbContext<ApplicationDbContext>(option =>
     option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -69,6 +71,7 @@ builder.Services.AddAutoMapper(typeof(Mapowanie));
 
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
+// Kofiufuracja uwierzytelniania u¿ytkownika
 builder.Services.AddAuthentication(x =>
 {
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -87,7 +90,7 @@ builder.Services.AddAuthentication(x =>
     };
 });
 
-
+// Dodanie autoryzacji u¿ytkownika
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("Admin", policy => policy.RequireRole("admin"));
@@ -95,8 +98,7 @@ builder.Services.AddAuthorization(options =>
 
 var app = builder.Build();
 
-app.UseAuthentication();
-app.UseAuthorization();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -104,6 +106,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Wywo³anie 
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.ConfigureAuthEndpoints();
 

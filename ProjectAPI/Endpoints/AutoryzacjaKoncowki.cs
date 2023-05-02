@@ -6,6 +6,9 @@ using System.Net;
 
 namespace ProjectAPI.Endpoints
 {
+    /// <summary>
+    /// Klasa edpointów obsługujących autorayzacje użytkowników
+    /// </summary>
     public static class AutoryzacjaKoncowki
     {
         public static void ConfigureAuthEndpoints(this WebApplication app)
