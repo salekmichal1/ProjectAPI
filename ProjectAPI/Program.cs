@@ -5,14 +5,13 @@ using FluentValidation;
 using System.Net;
 using Microsoft.EntityFrameworkCore;
 using static Azure.Core.HttpHeader;
-using ProjectAPI.Repozytorium;
 using ProjectAPI.Endpoints;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
-
+using ProjectAPI.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,14 +57,14 @@ builder.Services.AddSwaggerGen(option => {
 });
 
 // Wstrzykiwanie Repozytorium
-builder.Services.AddScoped<IProduktRepo, ProduktRepo>();
-builder.Services.AddScoped<IAutoryzacjaRepo, AutoryzacjaRepo>();
+builder.Services.AddScoped<IProductRepo, ProductRepo>();
+builder.Services.AddScoped<IAuthorizationRepo, AuthorizationRepo>();
 
 // £¹czenie z baz¹ danych
 builder.Services.AddDbContext<ApplicationDbContext>(option =>
     option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddAutoMapper(typeof(Mapowanie));
+builder.Services.AddAutoMapper(typeof(Mapping));
 
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 

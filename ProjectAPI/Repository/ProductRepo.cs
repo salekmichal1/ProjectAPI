@@ -3,15 +3,15 @@ using ProjectAPI.Data;
 using ProjectAPI.Model;
 using static Azure.Core.HttpHeader;
 
-namespace ProjectAPI.Repozytorium
+namespace ProjectAPI.Repository
 {
     /// <summary>
     /// Kalas imepletmecujaća interjest trzymający metody dla produktu
     /// </summary>
-    public class ProduktRepo : IProduktRepo
+    public class ProductRepo : IProductRepo
     {
         private readonly ApplicationDbContext _dbContext;
-        public ProduktRepo(ApplicationDbContext dbContext)
+        public ProductRepo(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
         }
@@ -19,20 +19,20 @@ namespace ProjectAPI.Repozytorium
         /// <summary>
         /// Tworzenie produktu
         /// </summary>
-        /// <param name="produkt"></param>
+        /// <param name="product"></param>
         /// <returns></returns>
-        public async Task CreateAsync(Produkt produkt)
+        public async Task CreateAsync(Product product)
         {
-            _dbContext.Add(produkt);
+            _dbContext.Add(product);
         }
 
         /// <summary>
         /// Pobieranie wszytkisch produktów
         /// </summary>
         /// <returns></returns>
-        public async Task<ICollection<Produkt>> GetAllAsync()
+        public async Task<ICollection<Product>> GetAllAsync()
         {
-            return await _dbContext.Produkts.ToListAsync();
+            return await _dbContext.Products.ToListAsync();
         }
         
         /// <summary>
@@ -40,29 +40,29 @@ namespace ProjectAPI.Repozytorium
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<Produkt> GetAsync(int id)
+        public async Task<Product> GetAsync(int id)
         {
-            return await _dbContext.Produkts.FirstOrDefaultAsync(u => u.Id == id);
+            return await _dbContext.Products.FirstOrDefaultAsync(u => u.Id == id);
         }
 
         /// <summary>
         /// Pobieranie pjedynczego po nazwie
         /// </summary>
-        /// <param name="produktNazwa"></param>
+        /// <param name="productName"></param>
         /// <returns></returns>
-        public async Task<Produkt> GetAsync(string produktNazwa)
+        public async Task<Product> GetAsync(string productName)
         {
-            return await _dbContext.Produkts.FirstOrDefaultAsync(u => u.Nazwa.ToLower() == produktNazwa.ToLower());
+            return await _dbContext.Products.FirstOrDefaultAsync(u => u.Name.ToLower() == productName.ToLower());
         }
 
         /// <summary>
         /// Usuwanie produktu
         /// </summary>
-        /// <param name="produkt"></param>
+        /// <param name="product"></param>
         /// <returns></returns>
-        public async Task RemoveAsync(Produkt produkt)
+        public async Task RemoveAsync(Product product)
         {
-            _dbContext.Produkts.Remove(produkt);
+            _dbContext.Products.Remove(product);
         }
 
         /// <summary>
@@ -77,11 +77,11 @@ namespace ProjectAPI.Repozytorium
         /// <summary>
         /// Aktualizacja produktu
         /// </summary>
-        /// <param name="produkt"></param>
+        /// <param name="product"></param>
         /// <returns></returns>
-        public async Task UpdateAsync(Produkt produkt)
+        public async Task UpdateAsync(Product product)
         {
-            _dbContext.Produkts.Update(produkt);
+            _dbContext.Products.Update(product);
         }
     }
 }

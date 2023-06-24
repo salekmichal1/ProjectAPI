@@ -6,11 +6,11 @@ namespace ProjectAPI.Model
     {
         public APIStatus()
         {
-            Bledy = new List<string>();
+            Errors = new List<string>();
         }
-        public bool Akceptacja { get; set; }
-        public Object Rezulstat { get; set; }
-        public HttpStatusCode KodStanu { get; set; }
-        public List<string> Bledy { get; set; }
+        public bool Accept { get; set; }
+        public Object Result { get; set; }
+        public HttpStatusCode StatusCode { get; set; }
+        public List<string> Errors { get; set; }
     }
 }

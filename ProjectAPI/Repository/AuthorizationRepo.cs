@@ -9,12 +9,12 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace ProjectAPI.Repozytorium
+namespace ProjectAPI.Repository
 {
     /// <summary>
     /// Kalas imepletmecujaća interjest trzymający metody dla Autoryzacji użytkowników
     /// </summary>
-    public class AutoryzacjaRepo : IAutoryzacjaRepo
+    public class AuthorizationRepo : IAuthorizationRepo
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly IConfiguration _configuration;
@@ -31,7 +31,7 @@ namespace ProjectAPI.Repozytorium
         /// <param name="configuration"></param>
         /// <param name="userManager"></param>
         /// <param name="roleManager"></param>
-        public AutoryzacjaRepo(ApplicationDbContext dbContext, IMapper mapper, IConfiguration configuration, UserManager<ApplicationUser> userManager,  RoleManager<IdentityRole> roleManager)
+        public AuthorizationRepo(ApplicationDbContext dbContext, IMapper mapper, IConfiguration configuration, UserManager<ApplicationUser> userManager,  RoleManager<IdentityRole> roleManager)
         {
             _dbContext = dbContext;
             _mapper = mapper;
@@ -44,13 +44,13 @@ namespace ProjectAPI.Repozytorium
         /// <summary>
         /// Sprawdzanie czy użytkownik już istnieje
         /// </summary>
-        /// <param name="nazwaurzytkownika"></param>
+        /// <param name="userName"></param>
         /// <returns></returns>
-        public bool IsUniqueUser(string nazwaurzytkownika)
+        public bool IsUniqueUser(string userName)
         {
-            var urzytkownik = _dbContext.ApplicationUsers.FirstOrDefault(x => x.UserName == nazwaurzytkownika);
+            var user = _dbContext.ApplicationUsers.FirstOrDefault(x => x.UserName == userName);
 
-            if (urzytkownik == null)
+            if (user == null)
                 return true;
 
             return false;
@@ -59,19 +59,19 @@ namespace ProjectAPI.Repozytorium
         /// <summary>
         /// Logowanie użytkownika
         /// </summary>
-        /// <param name="prosbaLogowaniaDTO"></param>
+        /// <param name="loginRequestDTO"></param>
         /// <returns></returns>
-        public async Task<OdpowiedzLogowaniaDTO> Login(ProsbaLogowaniaDTO prosbaLogowaniaDTO)
+        public async Task<LoginResposneDTO> Login(LoginRequestDTO loginRequestDTO)
         {
-            var urzytkownik = _dbContext.ApplicationUsers.SingleOrDefault(x => x.UserName == prosbaLogowaniaDTO.NazwaUrzytkownika);
-            bool isValid = await _userManager.CheckPasswordAsync(urzytkownik, prosbaLogowaniaDTO.Haslo);
+            var user = _dbContext.ApplicationUsers.SingleOrDefault(x => x.UserName == loginRequestDTO.UserName);
+            bool isValid = await _userManager.CheckPasswordAsync(user, loginRequestDTO.Password);
 
-            if (urzytkownik == null || isValid == false)
+            if (user == null || isValid == false)
             {
                 return null;
             }
 
-            var role = await _userManager.GetRolesAsync(urzytkownik);
+            var role = await _userManager.GetRolesAsync(user);
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(secretKey);
@@ -79,7 +79,7 @@ namespace ProjectAPI.Repozytorium
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.Name, urzytkownik.Name),
+                    new Claim(ClaimTypes.Name, user.Name),
                     new Claim(ClaimTypes.Role, role.FirstOrDefault()),
                 }),
                 Expires = DateTime.UtcNow.AddDays(7),
@@ -88,44 +88,44 @@ namespace ProjectAPI.Repozytorium
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
-            OdpowiedzLogowaniaDTO odpowiedzLogowaniaDTO = new()
+            LoginResposneDTO loginResposneDTO = new()
             {
-                Urzytkownik = _mapper.Map<UrzytkownikDTO>(urzytkownik),
+                User = _mapper.Map<UserDTO>(user),
                 Token = new JwtSecurityTokenHandler().WriteToken(token)
             };
-            return odpowiedzLogowaniaDTO;
+            return loginResposneDTO;
         }
 
 
         /// <summary>
         /// Rejestracja użytkownika
         /// </summary>
-        /// <param name="prosbaRejestracjiDTO"></param>
+        /// <param name="registerRequestDTO"></param>
         /// <returns></returns>
-        public async Task<UrzytkownikDTO> Register(ProsbaRejestracjiDTO prosbaRejestracjiDTO)
+        public async Task<UserDTO> Register(RegisterRequestDTO registerRequestDTO)
         {
-            ApplicationUser urzytkownikObj = new()
+            ApplicationUser userObject = new()
             {
-                UserName = prosbaRejestracjiDTO.NazwaUrzytkownika,
-                Name = prosbaRejestracjiDTO.Nazwa,
-                NormalizedEmail = prosbaRejestracjiDTO.NazwaUrzytkownika.ToUpper(),
-                Email = prosbaRejestracjiDTO.NazwaUrzytkownika
+                UserName = registerRequestDTO.UserName,
+                Name = registerRequestDTO.Name,
+                NormalizedEmail = registerRequestDTO.UserName.ToUpper(),
+                Email = registerRequestDTO.UserName
             };
 
             try
             {
-                var rezultat = await _userManager.CreateAsync(urzytkownikObj, prosbaRejestracjiDTO.Haslo);
-                if (rezultat.Succeeded)
+                var result = await _userManager.CreateAsync(userObject, registerRequestDTO.Password);
+                if (result.Succeeded)
                 {
                     if (!_roleManager.RoleExistsAsync("admin").GetAwaiter().GetResult())
                     {
                         await _roleManager.CreateAsync(new IdentityRole("admin"));
                         await _roleManager.CreateAsync(new IdentityRole("customer"));
                     }
-                    await _userManager.AddToRoleAsync(urzytkownikObj, "admin");
+                    await _userManager.AddToRoleAsync(userObject, "admin");
 
-                    var urzytkownik = _dbContext.ApplicationUsers.FirstOrDefault(u => u.UserName == prosbaRejestracjiDTO.NazwaUrzytkownika);
-                    return _mapper.Map<UrzytkownikDTO>(urzytkownik);
+                    var user = _dbContext.ApplicationUsers.FirstOrDefault(u => u.UserName == registerRequestDTO.UserName);
+                    return _mapper.Map<UserDTO>(user);
                 }
             }
             catch (Exception e)

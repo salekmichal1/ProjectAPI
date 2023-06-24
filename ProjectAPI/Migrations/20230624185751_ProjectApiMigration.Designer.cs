@@ -12,7 +12,7 @@ using ProjectAPI.Data;
 namespace ProjectAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230430154758_ProjectApiMigration")]
+    [Migration("20230624185751_ProjectApiMigration")]
     partial class ProjectApiMigration
     {
         /// <inheritdoc />
@@ -226,7 +226,7 @@ namespace ProjectAPI.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("ProjectAPI.Model.Produkt", b =>
+            modelBuilder.Entity("ProjectAPI.Model.Product", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -234,70 +234,67 @@ namespace ProjectAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<double>("Cena")
-                        .HasColumnType("float");
-
-                    b.Property<bool>("Dostepny")
+                    b.Property<bool>("Available")
                         .HasColumnType("bit");
 
-                    b.Property<int>("Ilosc")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Nazwa")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("Utworzony")
+                    b.Property<DateTime?>("Created")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("Zaktualizowany")
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("Price")
+                        .HasColumnType("float");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Updated")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Produkts");
+                    b.ToTable("Products");
 
                     b.HasData(
                         new
                         {
                             Id = 1,
-                            Cena = 10.0,
-                            Dostepny = true,
-                            Ilosc = 10,
-                            Nazwa = "Kubek"
+                            Available = true,
+                            Name = "Kubek",
+                            Price = 10.0,
+                            Quantity = 10
                         },
                         new
                         {
                             Id = 2,
-                            Cena = 20.0,
-                            Dostepny = false,
-                            Ilosc = 0,
-                            Nazwa = "Dlugopis"
+                            Available = false,
+                            Name = "Dlugopis",
+                            Price = 20.0,
+                            Quantity = 0
                         });
                 });
 
-            modelBuilder.Entity("ProjectAPI.Model.Urzytkownik", b =>
+            modelBuilder.Entity("ProjectAPI.Model.User", b =>
                 {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                    b.Property<string>("ID")
+                        .HasColumnType("nvarchar(450)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
-
-                    b.Property<string>("Haslo")
+                    b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Nazwa")
+                    b.Property<string>("Password")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("NazwaUrzytkownika")
+                    b.Property<string>("Role")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Rola")
+                    b.Property<string>("UserName")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
-                    b.ToTable("Urzytkownicy");
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

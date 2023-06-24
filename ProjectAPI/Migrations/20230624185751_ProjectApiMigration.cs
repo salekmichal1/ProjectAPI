@@ -54,37 +54,36 @@ namespace ProjectAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Produkts",
+                name: "Products",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Nazwa = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Cena = table.Column<double>(type: "float", nullable: false),
-                    Ilosc = table.Column<int>(type: "int", nullable: false),
-                    Dostepny = table.Column<bool>(type: "bit", nullable: false),
-                    Utworzony = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Zaktualizowany = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Price = table.Column<double>(type: "float", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    Available = table.Column<bool>(type: "bit", nullable: false),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Updated = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Produkts", x => x.Id);
+                    table.PrimaryKey("PK_Products", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Urzytkownicy",
+                name: "Users",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    NazwaUrzytkownika = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Nazwa = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Haslo = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Rola = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    ID = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Role = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Urzytkownicy", x => x.ID);
+                    table.PrimaryKey("PK_Users", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -194,12 +193,12 @@ namespace ProjectAPI.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "Produkts",
-                columns: new[] { "Id", "Cena", "Dostepny", "Ilosc", "Nazwa", "Utworzony", "Zaktualizowany" },
+                table: "Products",
+                columns: new[] { "Id", "Available", "Created", "Name", "Price", "Quantity", "Updated" },
                 values: new object[,]
                 {
-                    { 1, 10.0, true, 10, "Kubek", null, null },
-                    { 2, 20.0, false, 0, "Dlugopis", null, null }
+                    { 1, true, null, "Kubek", 10.0, 10, null },
+                    { 2, false, null, "Dlugopis", 20.0, 0, null }
                 });
 
             migrationBuilder.CreateIndex(
@@ -261,10 +260,10 @@ namespace ProjectAPI.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Produkts");
+                name: "Products");
 
             migrationBuilder.DropTable(
-                name: "Urzytkownicy");
+                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

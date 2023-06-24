@@ -12,8 +12,8 @@ namespace ProjectAPI.Data
         {
         }
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
-        public DbSet<Produkt> Produkts { get; set; }
-        public DbSet<Urzytkownik> Urzytkownicy { get; set; } 
+        public DbSet<Product> Products { get; set; }
+        public DbSet<User> Users { get; set; } 
 
         /// <summary>
         /// Dodawania użytkowników przy tworzeni bazy
@@ -23,22 +23,22 @@ namespace ProjectAPI.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Produkt>().HasData(
-                new Produkt()
+            modelBuilder.Entity<Product>().HasData(
+                new Product()
                 {
                     Id = 1,
-                    Nazwa = "Kubek",
-                    Cena = 10.00,
-                    Ilosc = 10,
-                    Dostepny = true
+                    Name = "Kubek",
+                    Price = 10.00,
+                    Quantity = 10,
+                    Available = true
                 },
-                new Produkt()
+                new Product()
                 {
                     Id = 2,
-                    Nazwa = "Dlugopis",
-                    Cena = 20.00,
-                    Ilosc = 0,
-                    Dostepny = false
+                    Name = "Dlugopis",
+                    Price = 20.00,
+                    Quantity = 0,
+                    Available = false
                 });
         }
     }
