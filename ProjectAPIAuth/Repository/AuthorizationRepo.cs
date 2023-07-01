@@ -2,14 +2,14 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using ProjectAPI.Data;
-using ProjectAPI.Model;
-using ProjectAPI.Model.DTO;
+using ProjectAPIAuth.Data;
+using ProjectAPIAuth.Model;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using ProjectAPIAuth.Model.DTO;
 
-namespace ProjectAPI.Repository
+namespace ProjectAPIAuth.Repository
 {
     /// <summary>
     /// Kalas imepletmecujaća interjest trzymający metody dla Autoryzacji użytkowników
@@ -75,6 +75,7 @@ namespace ProjectAPI.Repository
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(secretKey);
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new Claim[]

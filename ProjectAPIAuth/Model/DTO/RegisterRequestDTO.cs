@@ -1,4 +1,4 @@
-﻿namespace ProjectAPI.Model.DTO
+﻿namespace ProjectAPIAuth.Model.DTO
 {
     public class RegisterRequestDTO
     {

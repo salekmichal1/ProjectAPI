@@ -19,11 +19,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddDefaultTokenProviders()
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+//builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddDefaultTokenProviders()
+//    .AddEntityFrameworkStores<ApplicationDbContext>();
 
 // Kofiguracja swaggera pod weryfikacje u퓓tkownika
-builder.Services.AddSwaggerGen(option => {
+builder.Services.AddSwaggerGen(option =>
+{
     option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description =
@@ -56,9 +57,11 @@ builder.Services.AddSwaggerGen(option => {
 
 });
 
+//builder.Services.AddSwaggerGen();
+
 // Wstrzykiwanie Repozytorium
 builder.Services.AddScoped<IProductRepo, ProductRepo>();
-builder.Services.AddScoped<IAuthorizationRepo, AuthorizationRepo>();
+//builder.Services.AddScoped<IAuthorizationRepo, AuthorizationRepo>();
 
 // ９czenie z baz� danych
 builder.Services.AddDbContext<ApplicationDbContext>(option =>
@@ -68,11 +71,12 @@ builder.Services.AddAutoMapper(typeof(Mapping));
 
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
-// Kofiufuracja uwierzytelniania u퓓tkownika
+///Kofiufuracja uwierzytelniania u퓓tkownika
+///
 builder.Services.AddAuthentication(x =>
 {
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(x =>
 {
     x.RequireHttpsMetadata = false;
@@ -87,14 +91,14 @@ builder.Services.AddAuthentication(x =>
     };
 });
 
-// Dodanie autoryzacji u퓓tkownika
+///Dodanie autoryzacji u퓓tkownika
+///
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("Admin", policy => policy.RequireRole("admin"));
 });
 
 var app = builder.Build();
-
 
 
 // Configure the HTTP request pipeline.
@@ -108,9 +112,9 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.ConfigureAuthEndpoints();
+//app.AuthorizationEndpointsConfiguration();
 
-app.KonfiguracjaKoncowekProduktu();
+app.ProductEndpointsConfiguration();
 
 app.UseHttpsRedirection();
 

@@ -1,4 +1,4 @@
-﻿namespace ProjectAPI.Model
+﻿namespace ProjectAPIAuth.Model
 {
     public class User
     {

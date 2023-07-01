@@ -1,29 +1,28 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ProjectAPI.Model;
-using ProjectAPI.Model.DTO;
-using ProjectAPI.Repository;
+using ProjectAPIAuth.Model;
+using ProjectAPIAuth.Model.DTO;
+using ProjectAPIAuth.Repository;
 using System.Net;
 
-namespace ProjectAPI.Endpoints
+namespace ProjectAPIAuth.Endpoints
 {
     /// <summary>
     /// Klasa edpointów obsługujących autorayzacje użytkowników
     /// </summary>
     public static class AuthorizationEndpoints
     {
-        public static void ConfigureAuthEndpoints(this WebApplication app)
+        public static void AuthorizationEndpointsConfiguration(this WebApplication app)
         {
 
-            app.MapPost("/api/login", Login).WithName("Login").Accepts<LoginRequestDTO>("application/json")
+            app.MapPost("/api/auth/login", Login).WithName("Login").Accepts<LoginRequestDTO>("application/json")
                 .Produces<APIStatus>(200).Produces(400);
 
-            app.MapPost("/api/register", Register).WithName("Register").Accepts<RegisterRequestDTO>("application/json")
+            app.MapPost("/api/auth/register", Register).WithName("Register").Accepts<RegisterRequestDTO>("application/json")
                 .Produces<APIStatus>(200).Produces(400);
         }
 
 
-        private async static Task<IResult> Register(IAuthorizationRepo _autoRepo,
-            [FromBody] RegisterRequestDTO model)
+        private async static Task<IResult> Register(IAuthorizationRepo _autoRepo, [FromBody] RegisterRequestDTO model)
         {
             APIStatus response = new() { Accept = false, StatusCode = HttpStatusCode.BadRequest };
 
@@ -48,8 +47,7 @@ namespace ProjectAPI.Endpoints
 
         }
 
-        private async static Task<IResult> Login(IAuthorizationRepo _autoRepo,
-           [FromBody] LoginRequestDTO model)
+        private async static Task<IResult> Login(IAuthorizationRepo _autoRepo, [FromBody] LoginRequestDTO model)
         {
             APIStatus response = new() { Accept = false, StatusCode = HttpStatusCode.BadRequest };
 

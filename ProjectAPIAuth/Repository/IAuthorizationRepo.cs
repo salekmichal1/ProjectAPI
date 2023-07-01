@@ -1,6 +1,6 @@
-﻿using ProjectAPI.Model.DTO;
+﻿using ProjectAPIAuth.Model.DTO;
 
-namespace ProjectAPI.Repository
+namespace ProjectAPIAuth.Repository
 {
     public interface IAuthorizationRepo
     {

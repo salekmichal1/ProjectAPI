@@ -15,7 +15,7 @@ namespace ProjectAPI.Endpoints
     /// </summary>
     public static class ProductEndpoints
     {
-        public static void KonfiguracjaKoncowekProduktu(this WebApplication app)
+        public static void ProductEndpointsConfiguration(this WebApplication app)
         {
 
             app.MapGet("/api/product", GetAllProduct).WithName("GetAllProducts").Produces<APIStatus>(200).RequireAuthorization("Admin");
