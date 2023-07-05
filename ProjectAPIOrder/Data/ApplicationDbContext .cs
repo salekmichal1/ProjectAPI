@@ -1,17 +1,18 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using ProjectAPI.Model;
+using ProjectAPIOrder.Model;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 
-namespace ProjectAPI.Data
+namespace ProjectAPIOrder.Data
 {
     public class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
         }
-        public DbSet<Product> Products { get; set; }
+        public DbSet<OrderHeader> OrderHeaders { get; set; }
+        public DbSet<OrderDetails> OrderDetails { get; set; }
 
         /// <summary>
         /// Dodawania użytkowników przy tworzeni bazy
@@ -21,23 +22,6 @@ namespace ProjectAPI.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Product>().HasData(
-                new Product()
-                {
-                    Id = 1,
-                    Name = "Kubek",
-                    Price = 10.00,
-                    Quantity = 10,
-                    Available = true
-                },
-                new Product()
-                {
-                    Id = 2,
-                    Name = "Dlugopis",
-                    Price = 20.00,
-                    Quantity = 0,
-                    Available = false
-                });
         }
     }
 }

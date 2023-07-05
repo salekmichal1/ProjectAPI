@@ -1,9 +1,9 @@
-﻿using ProjectAPI.Model.DTO;
-using ProjectAPI.Model;
+﻿using ProjectAPIOrder.Model.DTO;
+using ProjectAPIOrder.Model;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using AutoMapper;
 
-namespace ProjectAPI
+namespace ProjectAPIOrder
 {
     /// <summary>
     /// Klasa impelmentujaca kopiowanie danych z klas tabel 
@@ -12,9 +12,8 @@ namespace ProjectAPI
     {
         public Mapping()
         {
-            CreateMap<Product, CreateProductDTO>().ReverseMap();
-            CreateMap<Product, UpdateProductDTO>().ReverseMap();
-            CreateMap<Product, ProductDTO>().ReverseMap();
+            CreateMap<OrderHeader, OrderHeaderDTO>().ReverseMap();
+            CreateMap<OrderDetails, OrderDetailsDTO>().ReverseMap();
         }
     }
 }

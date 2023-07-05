@@ -18,16 +18,16 @@ namespace ProjectAPI.Endpoints
         public static void ProductEndpointsConfiguration(this WebApplication app)
         {
 
-            app.MapGet("/api/product", GetAllProduct).WithName("GetAllProducts").Produces<APIStatus>(200).RequireAuthorization("Admin");
+            app.MapGet("/api/product", GetAllProduct).WithName("GetAllProducts").Produces<APIStatus>(200);
 
             app.MapGet("/api/product/{id:int}", GetProduct).WithName("GetProduct").Produces<APIStatus>(200);
 
-            app.MapPost("/api/product", CreateProduct).WithName("CreateProduct").Accepts<CreateProductDTO>("application/json").Produces<APIStatus>(201).Produces(400);
+            app.MapPost("/api/product", CreateProduct).WithName("CreateProduct").Accepts<CreateProductDTO>("application/json").Produces<APIStatus>(201).Produces(400).RequireAuthorization("Admin");
 
             app.MapPut("/api/product", UpdateProduct).WithName("UpdateProduct")
-                .Accepts<UpdateProductDTO>("application/json").Produces<APIStatus>(200).Produces(400);
+                .Accepts<UpdateProductDTO>("application/json").Produces<APIStatus>(200).Produces(400).RequireAuthorization("Admin");
 
-            app.MapDelete("/api/product/{id:int}", DeleteProduct);
+            app.MapDelete("/api/product/{id:int}", DeleteProduct).RequireAuthorization("Admin");
         }
 
         private async static Task<IResult> GetProduct(IProductRepo _productRepo, ILogger<Program> _logger, int id)

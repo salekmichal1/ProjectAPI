@@ -1,17 +1,15 @@
-using ProjectAPI.Data;
-using ProjectAPI.Model;
-using ProjectAPI;
+using ProjectAPIOrder;
 using FluentValidation;
 using System.Net;
 using Microsoft.EntityFrameworkCore;
 using static Azure.Core.HttpHeader;
-using ProjectAPI.Endpoints;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
-using ProjectAPI.Repository;
+using ProjectAPIOrder.Data;
+using ProjectAPIOrder.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,8 +17,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
-//builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddDefaultTokenProviders()
-//    .AddEntityFrameworkStores<ApplicationDbContext>();
 
 // Kofiguracja swaggera pod weryfikacje u¿ytkownika
 builder.Services.AddSwaggerGen(option =>
@@ -60,7 +56,8 @@ builder.Services.AddSwaggerGen(option =>
 //builder.Services.AddSwaggerGen();
 
 // Wstrzykiwanie Repozytorium
-builder.Services.AddScoped<IProductRepo, ProductRepo>();
+
+
 //builder.Services.AddScoped<IAuthorizationRepo, AuthorizationRepo>();
 
 // £¹czenie z baz¹ danych
@@ -69,14 +66,20 @@ builder.Services.AddDbContext<ApplicationDbContext>(option =>
 
 builder.Services.AddAutoMapper(typeof(Mapping));
 
+builder.Services.AddScoped<IProductRepo, ProductRepo>();
+
+builder.Services.AddHttpClient("ProjectAPI", u => u.BaseAddress = new Uri(builder.Configuration["ServicesUrls:ProjecttAPI"]));
+
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
 
 ///Kofiufuracja uwierzytelniania u¿ytkownika
 ///
 builder.Services.AddAuthentication(x =>
 {
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(x =>
 {
     x.RequireHttpsMetadata = false;
@@ -112,9 +115,8 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.ProductEndpointsConfiguration();
 
 app.UseHttpsRedirection();
-
+app.MapControllers();
 
 app.Run();
