@@ -13,6 +13,10 @@ namespace ProjectAPIOrder.Repository
             _httpClientFactory = clientFactory;
         }
 
+        /// <summary>
+        /// Pobieranie danych z innego projektu ProjectAPI, aby można było wyświetlić dane o zamówieniu zależne od produktów
+        /// </summary>
+        /// <returns></returns>
         public async Task<IEnumerable<ProductDTO>> GetProducts()
         {
             var client = _httpClientFactory.CreateClient("ProjectAPI");

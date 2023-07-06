@@ -4,7 +4,7 @@ using ProjectAPI.Model.DTO;
 namespace ProjectAPI.Walidacja
 {
     /// <summary>
-    /// Kala impelentująca walidacje wprowadancych danych podczas aktualiacji produktu
+    /// Kala tworząca walidacje wprowadancych danych podczas aktualiacji produktu
     /// </summary>
     public class UpdateProductValidation : AbstractValidator<UpdateProductDTO>
     {

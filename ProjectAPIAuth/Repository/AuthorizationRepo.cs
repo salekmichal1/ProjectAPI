@@ -87,6 +87,7 @@ namespace ProjectAPIAuth.Repository
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 
+            /// tworzenie tokenu do autoryzcaji 
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
             LoginResposneDTO loginResposneDTO = new()

@@ -19,8 +19,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
-//builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddDefaultTokenProviders()
-//    .AddEntityFrameworkStores<ApplicationDbContext>();
 
 // Kofiguracja swaggera pod weryfikacje u¿ytkownika
 builder.Services.AddSwaggerGen(option =>
@@ -56,8 +54,6 @@ builder.Services.AddSwaggerGen(option =>
 
 
 });
-
-//builder.Services.AddSwaggerGen();
 
 // Wstrzykiwanie Repozytorium
 builder.Services.AddScoped<IProductRepo, ProductRepo>();

@@ -53,12 +53,6 @@ builder.Services.AddSwaggerGen(option =>
 
 });
 
-//builder.Services.AddSwaggerGen();
-
-// Wstrzykiwanie Repozytorium
-
-
-//builder.Services.AddScoped<IAuthorizationRepo, AuthorizationRepo>();
 
 // £¹czenie z baz¹ danych
 builder.Services.AddDbContext<ApplicationDbContext>(option =>
@@ -66,6 +60,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(option =>
 
 builder.Services.AddAutoMapper(typeof(Mapping));
 
+/// Wstrzykiwanie repozytorium do komunikacji z innym serwisem
 builder.Services.AddScoped<IProductRepo, ProductRepo>();
 
 builder.Services.AddHttpClient("ProjectAPI", u => u.BaseAddress = new Uri(builder.Configuration["ServicesUrls:ProjecttAPI"]));

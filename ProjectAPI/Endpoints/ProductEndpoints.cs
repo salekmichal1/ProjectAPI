@@ -15,6 +15,11 @@ namespace ProjectAPI.Endpoints
     /// </summary>
     public static class ProductEndpoints
     {
+
+        /// <summary>
+        /// Konfiguracja endpointów 
+        /// </summary>
+        /// <param name="app"></param>
         public static void ProductEndpointsConfiguration(this WebApplication app)
         {
 
@@ -30,6 +35,13 @@ namespace ProjectAPI.Endpoints
             app.MapDelete("/api/product/{id:int}", DeleteProduct).RequireAuthorization("Admin");
         }
 
+        /// <summary>
+        /// Pobieranie produktu po id 
+        /// </summary>
+        /// <param name="_productRepo"></param>
+        /// <param name="_logger"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
         private async static Task<IResult> GetProduct(IProductRepo _productRepo, ILogger<Program> _logger, int id)
         {
             Product productSD = await _productRepo.GetAsync(id);
@@ -52,6 +64,14 @@ namespace ProjectAPI.Endpoints
             }
         }
 
+        /// <summary>
+        /// Tworzenie produktu
+        /// </summary>
+        /// <param name="_productRepo"></param>
+        /// <param name="_mapper"></param>
+        /// <param name="_validator"></param>
+        /// <param name="createProductDTO"></param>
+        /// <returns></returns>
         [Authorize]
         private async static Task<IResult> CreateProduct(IProductRepo _productRepo, IMapper _mapper,
                 IValidator<CreateProductDTO> _validator, [FromBody] CreateProductDTO createProductDTO)
@@ -86,6 +106,14 @@ namespace ProjectAPI.Endpoints
             return Results.Ok(resposne);
         }
 
+        /// <summary>
+        /// Aktualizowanie produktu
+        /// </summary>
+        /// <param name="_produktRepo"></param>
+        /// <param name="_mapper"></param>
+        /// <param name="_validator"></param>
+        /// <param name="updateProductDTO"></param>
+        /// <returns></returns>
         [Authorize]
         private async static Task<IResult> UpdateProduct(IProductRepo _produktRepo, IMapper _mapper,
                 IValidator<UpdateProductDTO> _validator, [FromBody] UpdateProductDTO updateProductDTO)
@@ -110,7 +138,12 @@ namespace ProjectAPI.Endpoints
 
             return Results.Ok(resposne);
         }
-
+        /// <summary>
+        /// Usuwanie produktu
+        /// </summary>
+        /// <param name="_productRepo"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [Authorize]
         private async static Task<IResult> DeleteProduct(IProductRepo _productRepo, int id)
         {
@@ -135,6 +168,12 @@ namespace ProjectAPI.Endpoints
             }
         }
 
+        /// <summary>
+        /// Pobieranie listy produktów
+        /// </summary>
+        /// <param name="_productRepo"></param>
+        /// <param name="_logger"></param>
+        /// <returns></returns>
         private async static Task<IResult> GetAllProduct(IProductRepo _productRepo, ILogger<Program> _logger)
         {
             APIStatus response = new();

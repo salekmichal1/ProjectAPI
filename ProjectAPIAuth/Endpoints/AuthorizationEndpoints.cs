@@ -11,6 +11,10 @@ namespace ProjectAPIAuth.Endpoints
     /// </summary>
     public static class AuthorizationEndpoints
     {
+        /// <summary>
+        /// Konfiguracja endpointów
+        /// </summary>
+        /// <param name="app"></param>
         public static void AuthorizationEndpointsConfiguration(this WebApplication app)
         {
 
@@ -21,7 +25,12 @@ namespace ProjectAPIAuth.Endpoints
                 .Produces<APIStatus>(200).Produces(400);
         }
 
-
+        /// <summary>
+        /// Metoda odpowiadająca za rejestracja użytkownika
+        /// </summary>
+        /// <param name="_autoRepo"></param>
+        /// <param name="model"></param>
+        /// <returns></returns>
         private async static Task<IResult> Register(IAuthorizationRepo _autoRepo, [FromBody] RegisterRequestDTO model)
         {
             APIStatus response = new() { Accept = false, StatusCode = HttpStatusCode.BadRequest };
@@ -47,6 +56,12 @@ namespace ProjectAPIAuth.Endpoints
 
         }
 
+        /// <summary>
+        /// Metoda odpowiadająca za logowanie użytkownika
+        /// </summary>
+        /// <param name="_autoRepo"></param>
+        /// <param name="model"></param>
+        /// <returns></returns>
         private async static Task<IResult> Login(IAuthorizationRepo _autoRepo, [FromBody] LoginRequestDTO model)
         {
             APIStatus response = new() { Accept = false, StatusCode = HttpStatusCode.BadRequest };

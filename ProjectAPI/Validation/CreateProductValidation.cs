@@ -5,7 +5,7 @@ using ProjectAPI.Model.DTO;
 namespace ProjectAPI.Walidacja
 {
     /// <summary>
-    /// Kala impelentująca walidacje wprowadancych danych podczas tworzenia produktu
+    /// Klasa tworząca walidacje wprowadancych danych podczas tworzenia produktu
     /// </summary>
     public class CreateProductValidation : AbstractValidator<CreateProductDTO>
     {

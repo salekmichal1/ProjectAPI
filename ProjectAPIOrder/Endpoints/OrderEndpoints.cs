@@ -28,6 +28,11 @@ namespace ProjectAPIOrder.Endpoints
             _productRepo = productRepo;
         }
 
+        /// <summary>
+        /// Pobierania zamówienia po id użytkownika
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         [HttpGet("GetOrder/{userId}")]
         public async Task<ResponseDTO> GetOrder(string userId)
         {
@@ -55,6 +60,11 @@ namespace ProjectAPIOrder.Endpoints
             return _response;
         }
 
+        /// <summary>
+        /// Tworzenie i aktualizacja danych zamówienia
+        /// </summary>
+        /// <param name="orderDTO"></param>
+        /// <returns></returns>
         [Authorize(Policy = "Admin")]
         [HttpPost("UpsertOrder")]
         public async Task<ResponseDTO> UpsertOrder(OrderDTO orderDTO)
@@ -100,6 +110,12 @@ namespace ProjectAPIOrder.Endpoints
             }
             return _response;
         }
+
+        /// <summary>
+        /// Usuwanie zamówienia
+        /// </summary>
+        /// <param name="orderDetailsId"></param>
+        /// <returns></returns>
         [Authorize(Policy = "Admin")]
         [HttpPost("DeleteOrder")]
         public async Task<ResponseDTO> DeleteOrder([FromBody]int orderDetailsId)
